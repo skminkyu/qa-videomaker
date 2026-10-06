@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>보도자료 쇼츠 메이커</title>
+<style>
+@font-face{font-family:'Pretendard';font-weight:400;src:url(/fonts/Pretendard-Regular.otf)}
+@font-face{font-family:'Pretendard';font-weight:600;src:url(/fonts/Pretendard-SemiBold.otf)}
+@font-face{font-family:'Pretendard';font-weight:700;src:url(/fonts/Pretendard-Bold.otf)}
+@font-face{font-family:'Pretendard';font-weight:800;src:url(/fonts/Pretendard-ExtraBold.otf)}
+:root{--ink:#161e2e;--sub:#5a6070;--line:#e4ddd0;--bg:#f7f4ee;--card:#fff;--acc:#e25822;--teal:#0e7490;
+--err:#c62828;--warn:#b26a00;--info:#3b6ea5;--ok:#1b7a43;--soft:#efe9de}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Pretendard','Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}
+button{font-weight:700;border:0;border-radius:10px;padding:9px 14px;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+.primary{background:var(--ink);color:#fff}.accent{background:var(--acc);color:#fff}
+.ghost{background:var(--soft);color:var(--ink)}.danger{background:#fde8e8;color:var(--err)}
+.small{padding:5px 10px;font-size:12px;border-radius:8px}
+a.btn{display:inline-block;text-decoration:none;font-weight:700;border-radius:10px;padding:9px 14px}
+#app{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:100vh}
+/* 사이드바 */
+#side{background:var(--card);border-right:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:14px;
+position:sticky;top:0;height:100vh;overflow:auto}
+.brand{font-size:18px;font-weight:800}.brand span{color:var(--acc)}
+.chip{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px}
+.chip.on{background:#e3f4ea;color:var(--ok)}.chip.off{background:#fff3dc;color:var(--warn)}
+#drop{border:2px dashed var(--line);border-radius:14px;padding:18px;text-align:center;cursor:pointer;color:var(--sub);font-size:14px;transition:.15s}
+#drop.over,#drop:hover{border-color:var(--acc);background:#fff7f2;color:var(--ink)}
+#drop b{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
+.opt{font-size:13px;color:var(--sub);display:flex;align-items:center;gap:6px}
+#plist{display:flex;flex-direction:column;gap:8px}
+.pcard{border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;background:#fff}
+.pcard:hover{border-color:#cfc5b4}.pcard.sel{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.pcard .t{font-weight:700;font-size:14px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pcard .m{font-size:12px;color:var(--sub);margin-top:4px;display:flex;justify-content:space-between;gap:6px}
+.st{font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;white-space:nowrap}
+.st.review{background:#fff3dc;color:var(--warn)}.st.approved{background:#e8f0fa;color:var(--info)}
+.st.done{background:#e3f4ea;color:var(--ok)}.st.error{background:#fde8e8;color:var(--err)}
+.st.busy{background:var(--soft);color:var(--ink)}
+.bar{height:5px;background:var(--soft);border-radius:4px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc)}
+/* 메인 */
+#main{min-width:0}
+.empty{padding:80px 40px;color:var(--sub);text-align:center;line-height:1.8}
+.empty h2{color:var(--ink)}
+header.ph{padding:20px 28px 0;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.titlein{font-size:21px;font-weight:800;border:1px solid transparent;border-radius:8px;padding:4px 8px;margin-left:-8px;width:100%;background:transparent}
+.titlein:hover,.titlein:focus{border-color:var(--line);background:#fff;outline:none}
+.meta{color:var(--sub);font-size:13px;margin-top:4px;line-height:1.6}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{padding:5px 12px;border-radius:99px;font-size:13px;font-weight:700}
+.pill.err{background:#fde8e8;color:var(--err)}.pill.warn{background:#fff3dc;color:var(--warn)}.pill.ok{background:#e3f4ea;color:var(--ok)}
+.steps{display:flex;gap:6px;margin:12px 0 0;font-size:13px;font-weight:700;color:var(--sub)}
+.steps span{padding:4px 10px;border-radius:8px;background:var(--soft)}.steps span.cur{background:var(--ink);color:#fff}.steps span.dn{background:#e3f4ea;color:var(--ok)}
+.tabs{display:flex;gap:4px;margin-top:14px}
+.tabs button{background:none;border-radius:10px 10px 0 0;padding:10px 16px;color:var(--sub)}
+.tabs button.on{background:var(--bg);color:var(--ink);box-shadow:inset 0 3px 0 var(--acc)}
+.statusline{font-size:13px;color:var(--sub);margin-left:auto}
+.work{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:22px;padding:22px 28px}
+.scene{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;
+grid-template-columns:210px minmax(0,1fr);gap:18px;margin-bottom:14px}
+.prev{width:210px;aspect-ratio:9/16;border-radius:10px;border:1px solid var(--line);background:var(--soft);object-fit:cover;display:block}
+.tag{display:inline-block;font-size:12px;font-weight:700;background:var(--soft);border-radius:6px;padding:2px 8px;margin-right:6px}
+label{display:block;font-size:12px;font-weight:700;color:var(--sub);margin:10px 0 4px}
+textarea,input[type=text],select{width:100%;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:8px;background:#fff;color:var(--ink)}
+textarea{resize:vertical}
+textarea.json{font-family:ui-monospace,Menlo,monospace;font-size:12px;min-height:180px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chk{font-size:13px;margin:4px 0;padding:6px 10px;border-radius:8px}
+.chk.error{background:#fde8e8;color:var(--err)}.chk.warn{background:#fff3dc;color:var(--warn)}.chk.info{background:#e8f0fa;color:var(--info)}
+.refs{font-size:12px;color:var(--sub);margin-top:8px;line-height:1.9}.refs mark{background:#fff0b3;cursor:pointer;padding:1px 3px;border-radius:3px}
+details summary{cursor:pointer;font-size:12px;color:var(--sub);margin-top:10px}
+.sctools{display:flex;gap:4px;margin-left:auto}
+.shead{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+aside.src{position:sticky;top:190px;height:calc(100vh - 210px);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;overflow:auto}
+aside h3{font-size:15px;margin:0 0 8px;display:flex;justify-content:space-between;align-items:center}
+#src{white-space:pre-wrap;font-size:13px;line-height:1.7}#src mark{background:#ffd966}
+.actionbar{position:sticky;bottom:0;background:rgba(247,244,238,.95);backdrop-filter:blur(4px);border-top:1px solid var(--line);
+padding:12px 28px;display:flex;gap:8px;align-items:center;z-index:4}
+.dirty{font-size:13px;color:var(--warn);font-weight:700}
+/* 영상 탭 */
+.vwrap{display:grid;grid-template-columns:380px minmax(0,1fr);gap:24px;padding:22px 28px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.panel h3{margin:0 0 10px;font-size:16px}
+video{width:100%;max-width:380px;aspect-ratio:9/16;background:#000;border-radius:14px;display:block}
+.dl{display:flex;flex-wrap:wrap;gap:8px}
+.dl a{background:var(--soft);color:var(--ink)}.dl a.main{background:var(--acc);color:#fff}
+pre.txt{font-family:inherit;white-space:pre-wrap;font-size:13px;line-height:1.7;background:#fbfaf7;border:1px solid var(--line);border-radius:10px;padding:14px;max-height:520px;overflow:auto;margin:0}
+.bigbar{height:12px;background:var(--soft);border-radius:8px;overflow:hidden;margin:10px 0}.bigbar i{display:block;height:100%;background:var(--acc);transition:width .4s}
+.note{font-size:12px;color:var(--sub);line-height:1.6}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;z-index:50;opacity:0;transition:.2s;pointer-events:none}
+.toast.show{opacity:1}
+@media(max-width:1100px){.work{grid-template-columns:1fr}aside.src{position:static;height:340px}.vwrap{grid-template-columns:1fr}}
+@media(max-width:800px){#app{grid-template-columns:1fr}#side{position:static;height:auto}.scene{grid-template-columns:1fr}header.ph{position:static}}
+</style>
+</head>
+<body>
+<div id="app">
+  <nav id="side">
+    <div>
+      <div class="brand">보도자료 <span>→</span> 쇼츠</div>
+      <div style="margin-top:6px" id="cfg"></div>
+    </div>
+    <div id="drop"><b>보도자료 PDF 올리기</b>클릭하거나 파일을 끌어다 놓으세요<input type="file" id="file" accept="application/pdf,.pdf" multiple hidden></div>
+    <label class="opt"><input type="checkbox" id="useai" checked> Claude로 대본 작성 (API 키 필요)</label>
+    <button class="ghost small" onclick="createSample()">예시 프로젝트 열기 (식약처 GLP-1)</button>
+    <div style="font-size:12px;font-weight:800;color:var(--sub);margin-top:4px">프로젝트</div>
+    <div id="plist"></div>
+  </nav>
+  <section id="main"><div class="empty">
+    <h2>정부 보도자료 PDF로 쇼츠 영상을 만듭니다</h2>
+    ① PDF 업로드 → ② 대본 자동 작성 → ③ 사람이 검수·승인 → ④ 영상(mp4/avi) + 자막(txt/srt) 생성<br>
+    왼쪽에서 PDF를 올리거나 예시 프로젝트를 열어 보세요.
+  </div></section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BUSY = ['queued','extracting','scripting','rendering'];
+const ST_LABEL = {queued:'대기',extracting:'추출 중',scripting:'대본 작성 중',review:'검수 대기',approved:'승인됨',rendering:'렌더링 중',done:'완료',error:'오류'};
+let CFG = {}, projects = [], cur = null, scenes = [], dirty = false, tab = 'script', pollT = null, SRC = '';
+
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2600); }
+async function api(path, opt={}){
+  const r = await fetch(path, opt);
+  if(!r.ok){ let m=r.statusText; try{ m=(await r.json()).detail||m }catch(e){} throw new Error(m); }
+  return r.headers.get('content-type')?.includes('json') ? r.json() : r;
+}
+
+// ---------------------------------------------------------------- 사이드바
+async function loadCfg(){
+  CFG = await api('/api/config');
+  $('#cfg').innerHTML = CFG.claude
+    ? `<span class="chip on">Claude 연결됨 · ${esc(CFG.model)}</span>`
+    : `<span class="chip off">API 키 없음 · 규칙 기반 초안</span>`;
+  if(!CFG.claude){ $('#useai').checked=false; }
+}
+async function loadList(){
+  projects = await api('/api/projects');
+  $('#plist').innerHTML = projects.map(p => {
+    const busy = BUSY.includes(p.status);
+    return `<div class="pcard ${cur&&cur.id===p.id?'sel':''}" onclick="openProject('${p.id}')">
+      <div class="t">${esc(p.video_title || p.name)}</div>
+      <div class="m"><span>${esc(p.meta?.agency_short||p.meta?.agency||'')} ${esc(p.meta?.release_date||'')}</span>
+      <span class="st ${busy?'busy':p.status}">${ST_LABEL[p.status]||p.status}</span></div>
+      ${busy?`<div class="bar"><i style="width:${Math.round((p.progress||0)*100)}%"></i></div>`:''}
+    </div>`;
+  }).join('') || '<div class="note">아직 프로젝트가 없습니다.</div>';
+}
+const drop = $('#drop'), fileIn = $('#file');
+drop.onclick = () => fileIn.click();
+drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+drop.ondragleave = () => drop.classList.remove('over');
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); upload(e.dataTransfer.files); };
+fileIn.onchange = () => { upload(fileIn.files); fileIn.value=''; };
+async function upload(files){
+  let last;
+  for(const f of files){
+    const fd = new FormData(); fd.append('pdf', f); fd.append('use_ai', $('#useai').checked);
+    try{ last = await api('/api/projects', {method:'POST', body:fd}); toast(`${f.name} 업로드 — 대본 작성을 시작합니다`); }
+    catch(e){ toast(`${f.name}: ${e.message}`); }
+  }
+  await loadList(); if(last) openProject(last.id);
+}
+async function createSample(){ const r = await api('/api/projects/sample',{method:'POST'}); await loadList(); openProject(r.id); }
+
+// ---------------------------------------------------------------- 프로젝트
+async function openProject(id, keepTab){
+  if(dirty && cur && cur.id!==id && !confirm('저장하지 않은 수정 사항이 있습니다. 이동할까요?')) return;
+  cur = await api('/api/projects/'+id);
+  scenes = JSON.parse(JSON.stringify(cur.scenes||[]));
+  SRC = cur.source_text || ''; dirty = false;
+  if(!keepTab) tab = cur.status==='done' ? 'video' : 'script';
+  render(); loadList(); schedulePoll();
+}
+function schedulePoll(){
+  clearTimeout(pollT);
+  if(cur && BUSY.includes(cur.status)) pollT = setTimeout(poll, 1200);
+}
+async function poll(){
+  if(!cur) return;
+  const p = await api('/api/projects/'+cur.id).catch(()=>null);
+  if(!p) return;
+  const was = cur.status; cur = p; SRC = p.source_text||'';
+  if(BUSY.includes(p.status)){ updateStatus(); loadList(); schedulePoll(); return; }
+  if(!dirty) scenes = JSON.parse(JSON.stringify(p.scenes||[]));
+  if(was==='rendering' && p.status==='done'){ tab='video'; toast('영상이 완성되었습니다'); }
+  render(); loadList();
+}
+function stepIdx(){ const s=cur.status; return s==='done'?4 : s==='rendering'?3 : (cur.approved?2 : (BUSY.includes(s)?0:1)); }
+function render(){
+  if(!cur) return;
+  const c = cur.checks || {errors:0,warnings:0,global:[],scenes:[]};
+  const m = cur.meta||{}, si = stepIdx();
+  const steps = ['PDF 분석','대본 검수','승인','영상 생성','완료'].map((t,i)=>`<span class="${i<si?'dn':i===si?'cur':''}">${i+1}. ${t}</span>`).join('');
+  $('#main').innerHTML = `
+  <header class="ph">
+    <input class="titlein" id="vtitle" value="${esc(cur.video_title||cur.name)}" oninput="markDirty()" placeholder="영상 제목">
+    <div class="meta">${esc(m.agency||'')} · 배포 ${esc(m.release_date||'-')} · 원문: ${esc(m.title||cur.filename)}<br>
+      공공누리: ${esc(m.kogl||'-')} · 생성: ${esc(cur.generated_by||'-')}</div>
+    <div class="row" style="margin-top:8px">
+      ${c.errors?`<span class="pill err">차단 오류 ${c.errors}</span>`:`<span class="pill ok">차단 오류 없음</span>`}
+      ${c.warnings?`<span class="pill warn">확인 필요 ${c.warnings}</span>`:''}
+      ${cur.approved?`<span class="pill ok">✔ 승인됨 ${esc((cur.approved_at||'').replace('T',' '))}</span>`:''}
+      <span class="statusline" id="statusline"></span>
+    </div>
+    <div class="steps">${steps}</div>
+    <div class="tabs"><button class="${tab==='script'?'on':''}" onclick="setTab('script')">① 대본 검수</button>
+      <button class="${tab==='video'?'on':''}" onclick="setTab('video')">② 영상 · 자막</button>
+      <button style="margin-left:auto" class="danger small" onclick="delProject()">프로젝트 삭제</button></div>
+  </header>
+  <div id="body"></div>`;
+  updateStatus();
+  tab==='script' ? renderScript() : renderVideo();
+}
+function setTab(t){ tab=t; render(); }
+function updateStatus(){
+  const el = $('#statusline'); if(!el) return;
+  const busy = BUSY.includes(cur.status);
+  el.innerHTML = `<span class="st ${busy?'busy':cur.status}">${ST_LABEL[cur.status]||cur.status}</span> ${esc(cur.message||'')}`
+    + (busy?` · ${Math.round((cur.progress||0)*100)}%`:'');
+  const bb = $('#rbar'); if(bb) bb.style.width = Math.round((cur.progress||0)*100)+'%';
+  const rm = $('#rmsg'); if(rm) rm.textContent = cur.message||'';
+}
+async function delProject(){
+  if(!confirm('이 프로젝트와 생성된 영상·자막을 모두 삭제할까요?')) return;
+  await api('/api/projects/'+cur.id,{method:'DELETE'}).then(()=>{cur=null; $('#main').innerHTML='<div class="empty">삭제했습니다.</div>'; loadList();}).catch(e=>toast(e.message));
+}
+
+// ---------------------------------------------------------------- 대본 검수 탭
+function renderScript(){
+  const busy = BUSY.includes(cur.status) && cur.status!=='rendering';
+  if(busy){ $('#body').innerHTML = `<div class="empty"><h2>${esc(cur.message)}</h2><div class="bigbar" style="max-width:420px;margin:0 auto"><i id="rbar" style="width:${(cur.progress||0)*100}%"></i></div></div>`; return; }
+  if(cur.status==='error' && !scenes.length){ $('#body').innerHTML = `<div class="empty"><h2>오류</h2>${esc(cur.message)}<br><br><button class="primary" onclick="regen()">대본 다시 만들기</button></div>`; return; }
+  const c = cur.checks || {global:[],scenes:[]};
+  $('#body').innerHTML = `
+  <div class="work">
+    <div>
+      <div>${(c.global||[]).map(k=>`<div class="chk ${k.level}">${esc(k.msg)}</div>`).join('')}</div>
+      <div id="scenes" style="margin-top:12px"></div>
+      <div class="row" style="margin-bottom:30px">
+        <select id="newtpl" style="width:auto">${Object.keys(CFG.templates||{}).map(t=>`<option>${t}</option>`).join('')}</select>
+        <button class="ghost" onclick="addScene()">+ 장면 추가</button>
+        <span class="note">템플릿: ${Object.entries(CFG.templates||{}).map(([k,v])=>`<b>${k}</b> ${esc(v)}`).join(' / ')}</span>
+      </div>
+    </div>
+    <aside class="src"><h3>보도자료 원문 <a class="btn ghost small" href="/api/projects/${cur.id}/files/pdf" target="_blank">PDF 열기</a></h3><div id="src">${esc(SRC)}</div></aside>
+  </div>
+  <div class="actionbar">
+    <span id="dirty" class="dirty">${dirty?'저장하지 않은 수정 있음':''}</span>
+    <button class="ghost" onclick="regen()">대본 다시 만들기</button>
+    <a class="btn ghost" href="/api/projects/${cur.id}/files/scenes">scenes.json 내보내기</a>
+    <span style="margin-left:auto"></span>
+    <button class="ghost" onclick="saveScenes(false)">수정본 저장 · 재검수</button>
+    <button class="primary" onclick="saveScenes(true)">검수 완료 · 승인</button>
+    <button class="accent" ${cur.approved&&!dirty?'':'disabled'} onclick="setTab('video')">영상 만들기 →</button>
+  </div>`;
+  drawScenes();
+}
+function drawScenes(){
+  const c = cur.checks || {scenes:[]};
+  $('#scenes').innerHTML = scenes.map((s,i)=>{
+    const checks = (c.scenes||[])[i] || [];
+    const icons = (CFG.icons||[]).map(x=>`<option ${s.icon===x?'selected':''}>${x}</option>`).join('');
+    return `<section class="scene" id="sc-${i}">
+      <div><img class="prev" id="pv-${i}" alt="장면 ${i+1} 미리보기"><button class="ghost small" style="margin-top:6px;width:100%" onclick="preview(${i})">미리보기 새로고침</button></div>
+      <div>
+        <div class="shead"><span class="tag">장면 ${i+1}</span>
+          <select style="width:auto;padding:3px 6px;font-size:12px" onchange="setField(${i},'template',this.value)">
+            ${Object.keys(CFG.templates||{}).map(t=>`<option ${s.template===t?'selected':''}>${t}</option>`).join('')}</select>
+          <div class="sctools"><button class="ghost small" onclick="move(${i},-1)" title="위로">↑</button><button class="ghost small" onclick="move(${i},1)" title="아래로">↓</button>
+          <button class="danger small" onclick="removeScene(${i})">삭제</button></div></div>
+        ${checks.map(k=>`<div class="chk ${k.level}">${esc(k.msg)}</div>`).join('')}
+        <label>내레이션 (음성 + 자막)</label><textarea rows="2" oninput="setField(${i},'narration',this.value)">${esc(s.narration)}</textarea>
+        <div class="g2">
+          <div><label>화면 큰 문구 (줄바꿈 가능, **강조**)</label><textarea rows="3" oninput="setField(${i},'headline',this.value)">${esc(s.headline)}</textarea></div>
+          <div><label>보조 문구 (subline)</label><textarea rows="3" oninput="setField(${i},'subline',this.value)">${esc(s.subline)}</textarea></div>
+        </div>
+        ${['hook','icon_message','cta'].includes(s.template)?`<label>아이콘</label><select onchange="setField(${i},'icon',this.value)"><option value="">(기본)</option>${icons}</select>`:''}
+        <div class="refs">근거(클릭하면 원문 위치 표시): ${(s.source_refs||[]).map(r=>`<mark onclick="highlight(this.textContent)">${esc(r)}</mark>`).join(' ') || '없음'}</div>
+        <details><summary>숫자·항목·근거 등 전체 편집 (JSON)</summary>
+          <textarea class="json" id="json-${i}" onchange="setJSON(${i},this)">${esc(JSON.stringify(s,null,2))}</textarea>
+          <div class="note">items/steps 의 icon: ${(CFG.icons||[]).join(', ')}</div>
+        </details>
+      </div></section>`;
+  }).join('');
+  scenes.forEach((_,i)=>preview(i));
+}
+function markDirty(){ dirty = true; const d=$('#dirty'); if(d) d.textContent='저장하지 않은 수정 있음'; }
+const pvTimers = {};
+function setField(i,k,v){
+  if(v==='' && k!=='narration' && k!=='headline') delete scenes[i][k]; else scenes[i][k]=v;
+  markDirty();
+  const j = $('#json-'+i); if(j) j.value = JSON.stringify(scenes[i],null,2);
+  if(k==='template'){ drawScenes(); return; }
+  clearTimeout(pvTimers[i]); pvTimers[i] = setTimeout(()=>preview(i), 700);
+}
+function setJSON(i,el){
+  try{ scenes[i] = JSON.parse(el.value); markDirty(); drawScenes(); }
+  catch(e){ toast('장면 '+(i+1)+' JSON 형식 오류: '+e.message); }
+}
+function move(i,d){ const j=i+d; if(j<0||j>=scenes.length) return; [scenes[i],scenes[j]]=[scenes[j],scenes[i]]; markDirty(); cur.checks&&(cur.checks.scenes=[]); drawScenes(); }
+function removeScene(i){ if(!confirm(`장면 ${i+1}을 삭제할까요?`)) return; scenes.splice(i,1); markDirty(); cur.checks&&(cur.checks.scenes=[]); drawScenes(); }
+function addScene(){
+  const t = $('#newtpl').value;
+  const base = {template:t, headline:'새 장면', narration:'', source_refs:[]};
+  if(t==='counter') Object.assign(base,{value:0,unit:'건'});
+  if(t==='bar') base.items=[{label:'항목 1',value:50},{label:'항목 2',value:30}];
+  if(t==='reasons') base.items=[{icon:'warning',text:'이유 1'},{icon:'check',text:'이유 2'}];
+  if(t==='flow') base.steps=[{icon:'document',label:'1단계'},{icon:'check',label:'2단계'}];
+  scenes.push(base); markDirty(); drawScenes();
+  $('#sc-'+(scenes.length-1)).scrollIntoView({behavior:'smooth'});
+}
+async function preview(i){
+  const img = $('#pv-'+i); if(!img) return;
+  try{
+    const r = await fetch(`/api/projects/${cur.id}/preview?index=${i}&total=${scenes.length}`,
+      {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(scenes[i])});
+    if(!r.ok) throw new Error((await r.json()).detail);
+    const u = URL.createObjectURL(await r.blob()); if(img._u) URL.revokeObjectURL(img._u); img._u=u; img.src=u;
+  }catch(e){ img.alt='미리보기 실패: '+e.message; }
+}
+function highlight(q){
+  const el = $('#src'); el.textContent = SRC;
+  const target = q.replace(/\s+/g,''); if(!target) return;
+  let map=[], flat='';
+  for(let i=0;i<SRC.length;i++){ if(!/\s/.test(SRC[i])){ map.push(i); flat+=SRC[i]; } }
+  const k = flat.indexOf(target); if(k<0){ toast('원문에서 찾지 못했습니다'); return; }
+  const s=map[k], e=map[k+target.length-1]+1;
+  el.innerHTML = esc(SRC.slice(0,s))+'<mark id="hit">'+esc(SRC.slice(s,e))+'</mark>'+esc(SRC.slice(e));
+  $('#hit').scrollIntoView({block:'center'});
+}
+async function saveScenes(approve){
+  try{
+    cur = await api(`/api/projects/${cur.id}/scenes`, {method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({scenes, video_title: $('#vtitle').value, approve})});
+    toast(approve ? '승인되었습니다 — 영상을 만들 수 있습니다' : '저장했습니다 (자동 재검수 완료)');
+  }catch(e){ toast(e.message); cur = await api('/api/projects/'+cur.id); }
+  cur.source_text = SRC; scenes = JSON.parse(JSON.stringify(cur.scenes)); dirty=false; render(); loadList();
+}
+async function regen(){
+  if(!confirm('현재 대본을 버리고 새로 만들까요?')) return;
+  await api(`/api/projects/${cur.id}/regenerate?use_ai=${$('#useai').checked}`,{method:'POST'}).catch(e=>toast(e.message));
+  dirty=false; openProject(cur.id, true);
+}
+
+// ---------------------------------------------------------------- 영상 탭
+function renderVideo(){
+  const o = cur.outputs, rendering = cur.status==='rendering';
+  const stale = o && cur.updated_at && o.rendered_at && cur.approved_at && cur.approved_at > o.rendered_at;
+  const ro = cur.render_opts || {};
+  const voices = Object.entries(CFG.voices||{}).map(([k,v])=>`<option value="${k}" ${ro.voice===k?'selected':''}>${esc(v)}</option>`).join('');
+  const v = '?t='+encodeURIComponent(o?.rendered_at||'');
+  $('#body').innerHTML = `
+  <div class="vwrap">
+    <div>
+      <div class="panel"><h3>영상 만들기</h3>
+        ${cur.approved?'':'<div class="chk warn">대본 검수 탭에서 「검수 완료 · 승인」을 먼저 눌러 주세요.</div>'}
+        <div class="g2">
+          <div><label>파일 형식</label><select id="o-format"><option value="mp4">MP4 (H.264)</option><option value="avi" ${ro.format==='avi'?'selected':''}>AVI (MPEG-4)</option></select></div>
+          <div><label>음성 엔진</label><select id="o-tts">
+            <option value="auto">자동 (edge → gTTS → 무음)</option><option value="edge" ${ro.tts==='edge'?'selected':''}>edge-tts (자연스러운 신경망 음성)</option>
+            <option value="gtts" ${ro.tts==='gtts'?'selected':''}>Google gTTS</option><option value="silent" ${ro.tts==='silent'?'selected':''}>무음 (자막만)</option></select></div>
+          <div><label>목소리 (edge-tts)</label><select id="o-voice">${voices}</select></div>
+          <div><label>말하기 속도</label><select id="o-rate">${['+0%','+8%','+15%','+25%'].map(r=>`<option ${ (ro.rate||'+8%')===r?'selected':''}>${r}</option>`).join('')}</select></div>
+        </div>
+        <div style="margin-top:14px"><button class="accent" style="width:100%" ${cur.approved&&!rendering?'':'disabled'} onclick="startRender()">${o?'영상 다시 만들기':'영상 만들기'}</button></div>
+        ${rendering?`<div class="bigbar"><i id="rbar" style="width:${(cur.progress||0)*100}%"></i></div><div class="note" id="rmsg">${esc(cur.message)}</div>`:''}
+        ${cur.status==='error'?`<div class="chk error">${esc(cur.message)}</div>`:''}
+        <p class="note">1080×1920 · 30fps. 음성 엔진은 인터넷 연결이 필요하며, 실패하면 무음 영상(자막 포함)으로 만들어집니다.</p>
+      </div>
+      ${o?`<div class="panel"><h3>결과물 다운로드</h3>
+        ${stale?'<div class="chk warn">대본이 영상 생성 후 다시 승인되었습니다 — 영상을 다시 만들어 주세요.</div>':''}
+        <div class="dl">
+          <a class="btn main" href="/api/projects/${cur.id}/files/video?download=true">결과물1 · 영상 (${esc(o.video.split('.').pop().toUpperCase())})</a>
+          <a class="btn" href="/api/projects/${cur.id}/files/txt?download=true">결과물2 · 자막 TXT</a>
+          <a class="btn" href="/api/projects/${cur.id}/files/srt?download=true">자막 SRT</a>
+          <a class="btn" href="/api/projects/${cur.id}/files/thumbnail?download=true">썸네일 PNG</a>
+          <a class="btn" href="/api/projects/${cur.id}/files/scenes">scenes.json</a>
+        </div>
+        <p class="note">길이 ${o.duration}초 · 음성: ${esc(o.tts)}${o.tts_errors?.length?' (실패: '+esc(o.tts_errors.join(', '))+')':''} · 생성 ${esc((o.rendered_at||'').replace('T',' '))}</p>
+      </div>`:''}
+    </div>
+    <div>
+      ${o?`<div class="panel" style="display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:20px;align-items:start">
+        <div>${o.video.endsWith('mp4')?`<video controls playsinline src="/api/projects/${cur.id}/files/video${v}" poster="/api/projects/${cur.id}/files/thumbnail${v}"></video>`
+          :`<img src="/api/projects/${cur.id}/files/thumbnail${v}" style="width:100%;border-radius:14px"><p class="note">AVI는 브라우저에서 재생되지 않습니다 — 내려받아 확인하세요.</p>`}</div>
+        <div><h3 style="display:flex;justify-content:space-between;align-items:center">자막 텍스트 (subtitles.txt) <button class="ghost small" onclick="copyTxt()">복사</button></h3><pre class="txt" id="txt">불러오는 중…</pre></div>
+      </div>`:`<div class="empty">아직 만든 영상이 없습니다.</div>`}
+    </div>
+  </div>`;
+  if(o) fetch(`/api/projects/${cur.id}/files/txt${v}`).then(r=>r.text()).then(t=>{ const el=$('#txt'); if(el) el.textContent=t; });
+}
+async function startRender(){
+  const body = {format:$('#o-format').value, tts:$('#o-tts').value, voice:$('#o-voice').value, rate:$('#o-rate').value};
+  try{ await api(`/api/projects/${cur.id}/render`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); }
+  catch(e){ toast(e.message); return; }
+  openProject(cur.id, true);
+}
+function copyTxt(){ navigator.clipboard.writeText($('#txt').textContent).then(()=>toast('복사했습니다')); }
+
+window.addEventListener('beforeunload', e => { if(dirty){ e.preventDefault(); e.returnValue=''; } });
+loadCfg().then(loadList).then(()=>{ if(projects[0]) openProject(projects[0].id); });
+setInterval(()=>{ if(!cur || !BUSY.includes(cur.status)) loadList(); }, 8000);
+</script>
+</body>
+</html>

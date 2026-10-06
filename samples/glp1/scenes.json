@@ -1,0 +1,148 @@
+{
+  "meta": {
+    "video_title": "인터넷 비만치료제, 사도 될까?",
+    "generated_by": "예시 대본 (Claude API 출력 형식)",
+    "agency": "식품의약품안전처",
+    "release_date": "2026.10.6.",
+    "title": "식약처, GLP-1 계열 비만치료제 온라인 불법판매 등 점검 결과 발표",
+    "kogl": "자동 판별 불가 — 원문 마지막 장의 공공누리 마크를 직접 확인하세요"
+  },
+  "approved": false,
+  "scenes": [
+    {
+      "id": 1,
+      "template": "hook",
+      "icon": "question",
+      "headline": "인터넷에서 파는\n**비만치료제**,\n사도 될까?",
+      "narration": "요즘 화제인 비만치료제, 인터넷에서 사도 괜찮을까요?",
+      "source_refs": [
+        "최근 사회적 관심이 높은 GLP-1 계열 비만치료제"
+      ]
+    },
+    {
+      "id": 2,
+      "template": "counter",
+      "headline": "온라인 불법 판매·광고 적발",
+      "value": 949,
+      "unit": "건",
+      "subline": "2026년 1월~9월 식약처 점검 결과",
+      "narration": "식약처가 올해 1월부터 9월까지 점검해 보니, 불법 판매 게시물이 무려 949건이나 나왔어요.",
+      "source_refs": [
+        "(26.1.1.~9.30.)한 결과",
+        "「약사법」을 위반한 게시물 총 949건을 적발"
+      ]
+    },
+    {
+      "id": 3,
+      "template": "bar",
+      "headline": "어디서 팔고 있었을까?",
+      "items": [
+        {
+          "label": "판매사이트·게시판",
+          "value": 75.4
+        },
+        {
+          "label": "카페·블로그 후기",
+          "value": 13.6
+        },
+        {
+          "label": "SNS 1대1 채팅",
+          "value": 7.6
+        },
+        {
+          "label": "개인 간 중고거래",
+          "value": 3.4
+        }
+      ],
+      "narration": "대부분은 판매 사이트를 소개하는 글이었고, 블로그 후기, SNS 1대1 채팅, 중고거래까지 방법도 다양했죠.",
+      "source_refs": [
+        "판매사이트 소개 게시물 716건(75.4%)",
+        "개인 간 중고거래 32건(3.4%)"
+      ]
+    },
+    {
+      "id": 4,
+      "template": "reasons",
+      "headline": "그런데 왜 위험할까요?",
+      "items": [
+        {
+          "icon": "x_mark",
+          "text": "국내 허가를 받지 않았어요"
+        },
+        {
+          "icon": "question",
+          "text": "안전성이 검증되지 않았어요"
+        },
+        {
+          "icon": "warning",
+          "text": "가짜·불량일 수 있어요"
+        }
+      ],
+      "narration": "해외직구 제품은 국내 허가를 받지 않았어요. 안전성도 검증되지 않았고, 가짜나 불량일 수도 있어요.",
+      "source_refs": [
+        "해외직구 제품은 국내에서 허가되지 않아",
+        "위조",
+        "불량 의약품 등일 수"
+      ]
+    },
+    {
+      "id": 5,
+      "template": "icon_message",
+      "icon": "thermometer",
+      "headline": "특히 이 약은\n**냉장 보관**이 필수",
+      "subline": "배송 중 온도가 안 맞으면 변질될 수 있어요",
+      "narration": "특히 이 약은 냉장 보관이 필수예요. 배송 중에 온도가 안 맞으면 약이 변질될 수 있어요.",
+      "source_refs": [
+        "콜드체인(냉장·냉동 보관)이 유지되어야",
+        "적정 온도가 유지되지 않을 경우 변질될 우려가 크므로"
+      ]
+    },
+    {
+      "id": 6,
+      "template": "icon_message",
+      "icon": "shield_crack",
+      "headline": "문제가 생겨도\n**보상받기 어려워요**",
+      "narration": "게다가 문제가 생겨도 회수나 보상을 받기 어렵고요.",
+      "source_refs": [
+        "피해가 발생하더라도 회수나 보상 등 법적인 보호를 받기 어렵다"
+      ]
+    },
+    {
+      "id": 7,
+      "template": "flow",
+      "headline": "비만치료제는 **전문의약품**",
+      "steps": [
+        {
+          "icon": "hospital",
+          "label": "병원에서 처방"
+        },
+        {
+          "icon": "pharmacy",
+          "label": "약국에서 복약지도"
+        },
+        {
+          "icon": "check",
+          "label": "정해진 용량대로"
+        }
+      ],
+      "narration": "비만치료제는 전문의약품이에요. 꼭 병원에서 처방받고, 약국에서 복약지도를 받아 사용하세요.",
+      "source_refs": [
+        "의사의 처방 후 약사의 복약지도에 따라",
+        "정해진 용량"
+      ]
+    },
+    {
+      "id": 8,
+      "template": "cta",
+      "icon": "search",
+      "headline": "허가된 약인지\n확인하는 법",
+      "url": "nedrug.mfds.go.kr",
+      "subline": "의약품안전나라에서 제품명·성분명 검색",
+      "narration": "허가된 약인지는 의약품안전나라에서 확인할 수 있어요.",
+      "source_refs": [
+        "의약품안전나라",
+        "제품명, 성분명 등을 검색하면 국내 허가된"
+      ]
+    }
+  ]
+}
