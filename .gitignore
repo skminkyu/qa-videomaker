@@ -2,3 +2,5 @@ projects/
 __pycache__/
 *.pyc
 .env
+apikey.txt
+.venv/
